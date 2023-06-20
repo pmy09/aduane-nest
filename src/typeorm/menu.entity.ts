@@ -31,5 +31,5 @@ export class Menu {
   price: number;
 
   @ManyToOne(() => Restaurant, { cascade: true })
-  restaurant: Restaurant;
+  restaurant: Restaurant['id'];
 }

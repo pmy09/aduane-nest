@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MenuModule } from './menu/menu.module';
+import { RestaurantModule } from './restaurants/restaurant.module';
 import entities from './typeorm';
 
 @Module({
@@ -24,7 +25,7 @@ import entities from './typeorm';
       inject: [ConfigService],
     }),
     MenuModule,
-    // UsersModule,
+    RestaurantModule,
     // ProfilesModule,
     // EducationModule,
     // BookingModule,

@@ -12,13 +12,20 @@ export class MenuService {
   ) {}
   createMenu(createMenuDto: CreateMenuDto) {
     // const prodId = Math.random().toString();
+    // const newMenu = this.menuRepository.create(createMenuDto);
     const newMenu = this.menuRepository.create(createMenuDto);
+    console.log(
+      '🚀 ~ file: menu.service.ts:16 ~ MenuService ~ createMenu ~ newMenu:',
+      newMenu,
+    );
+    newMenu.restaurant = createMenuDto.restaurantId;
     return this.menuRepository.save(newMenu);
     // return prodId;
   }
 
   getMenu() {
     return this.menuRepository.find();
+    // return this.menuRepository.find({ relations: { restaurant: true } });
   }
 
   getSingleMenu(menuId: string) {
