@@ -24,8 +24,8 @@ export class MenuService {
   }
 
   getMenu() {
-    return this.menuRepository.find();
-    // return this.menuRepository.find({ relations: { restaurant: true } });
+    // return this.menuRepository.find();
+    return this.menuRepository.find({ relations: ['restaurant'] });
   }
 
   getSingleMenu(menuId: string) {

@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MenuModule } from './menu/menu.module';
+import { OrderModule } from './orders/order.module';
+import { UsersModule } from './users/user.module';
 import { RestaurantModule } from './restaurants/restaurant.module';
 import entities from './typeorm';
 
@@ -26,8 +28,8 @@ import entities from './typeorm';
     }),
     MenuModule,
     RestaurantModule,
-    // ProfilesModule,
-    // EducationModule,
+    OrderModule,
+    UsersModule,
     // BookingModule,
   ],
   controllers: [AppController],

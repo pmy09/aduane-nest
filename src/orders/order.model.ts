@@ -3,6 +3,7 @@ export class Order {
     public id: string,
     public restaurantId: string,
     public userId: string,
+    public price: number,
     public status: Status,
   ) {}
 }

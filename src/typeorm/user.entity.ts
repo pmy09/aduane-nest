@@ -1,15 +1,16 @@
-import { Menu } from './menu.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Order } from './order.entity';
+import { Role } from '../users/user.model';
 
 @Entity()
-export class Restaurant {
+export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -23,13 +24,23 @@ export class Restaurant {
     nullable: false,
     default: '',
   })
-  location: string;
+  password: string;
 
-  @OneToMany(() => Menu, (menu) => menu.restaurant)
-  @JoinColumn()
-  menu: Menu[];
+  @Column({
+    nullable: false,
+    default: '',
+  })
+  email: string;
 
-  @OneToMany(() => Order, (order) => order.restaurant)
+  @Column({
+    nullable: false,
+    type: 'enum',
+    enum: ['user', 'admin', 'chef'],
+    default: 'user',
+  })
+  role: Role;
+
+  @OneToMany(() => Order, (order) => order.user)
   @JoinColumn()
   order: Order[];
 }

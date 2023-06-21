@@ -21,7 +21,7 @@ export class RestaurantController {
 
   @Get()
   getAllRestaurants() {
-    return this.restaurantService.getRestaurant();
+    return this.restaurantService.getRestaurants();
   }
 
   @Get(':id')

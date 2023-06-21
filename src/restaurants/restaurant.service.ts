@@ -17,13 +17,17 @@ export class RestaurantService {
     // return prodId;
   }
 
-  getRestaurant() {
-    // return this.restaurantRepository.find();
+  getRestaurants() {
+    return this.restaurantRepository.find();
     return this.restaurantRepository.find({ relations: { menu: true } });
   }
 
   getSingleRestaurant(restaurantId: string) {
-    return this.findRestaurant(restaurantId);
+    // return this.findRestaurant(restaurantId);
+    return this.restaurantRepository.find({
+      where: { id: restaurantId },
+      relations: { menu: true },
+    });
   }
 
   async updateRestaurant(
