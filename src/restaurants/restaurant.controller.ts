@@ -6,24 +6,33 @@ import {
   Param,
   Patch,
   Post,
+  Request,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { RestaurantService } from './restaurant.service';
 import { CreateRestaurantDto } from './restaurant.dtos';
+import { Public } from 'src/helpers/auth.guard';
 
 @Controller('restaurant')
 export class RestaurantController {
   constructor(private readonly restaurantService: RestaurantService) {}
   @Post()
-  addRestaurant(@Body() createRestaurantDto: CreateRestaurantDto): any {
-    return this.restaurantService.createRestaurant(createRestaurantDto);
-    // return { id: genId };
+  @UsePipes(new ValidationPipe())
+  addRestaurant(
+    @Body() createRestaurantDto: CreateRestaurantDto,
+    @Request() req,
+  ): any {
+    return this.restaurantService.createRestaurant(createRestaurantDto, req);
   }
 
+  @Public()
   @Get()
   getAllRestaurants() {
     return this.restaurantService.getRestaurants();
   }
 
+  @Public()
   @Get(':id')
   getRestaurant(@Param('id') restaurantId: string) {
     return this.restaurantService.getSingleRestaurant(restaurantId);
@@ -33,16 +42,17 @@ export class RestaurantController {
   updateRestaurant(
     @Param('id') restaurantId: string,
     @Body() updateRestaurantDto: CreateRestaurantDto,
+    @Request() req,
   ) {
     return this.restaurantService.updateRestaurant(
       restaurantId,
       updateRestaurantDto,
+      req,
     );
   }
 
   @Delete(':id')
-  deleteRestaurant(@Param('id') restaurantId: string) {
-    this.restaurantService.deleteRestaurant(restaurantId);
-    return null;
+  deleteRestaurant(@Param('id') restaurantId: string, @Request() req) {
+    return this.restaurantService.deleteRestaurant(restaurantId, req);
   }
 }

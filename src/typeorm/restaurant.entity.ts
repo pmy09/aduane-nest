@@ -3,10 +3,12 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Order } from './order.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Restaurant {
@@ -32,4 +34,7 @@ export class Restaurant {
   @OneToMany(() => Order, (order) => order.restaurant)
   @JoinColumn()
   order: Order[];
+
+  @ManyToOne(() => User, { cascade: true })
+  user: User['id'];
 }

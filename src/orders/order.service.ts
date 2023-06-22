@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order, OrderItem, Restaurant, User } from 'src/typeorm';
@@ -22,13 +23,14 @@ export class OrderService {
     @InjectRepository(Restaurant)
     private readonly restaurantRepository: Repository<Restaurant>,
   ) {}
-  async createOrder(createOrderDto: CreateOrderDto) {
+  async createOrder(createOrderDto: CreateOrderDto, req): Promise<string> {
+    const { sub } = req.user;
     const orderData: Order = {
       id: uuidv4(),
       price: 0,
       order_item: [],
       restaurant: createOrderDto.restaurantId,
-      user: createOrderDto.userId,
+      user: sub,
       status: Status.PENDING,
     };
     const newOrder = this.orderRepository.create(orderData);
@@ -46,29 +48,35 @@ export class OrderService {
     });
 
     this.orderRepository.update({ id: newOrder.id }, { price: newOrder.price });
+    return 'Order created';
   }
 
-  getOrders() {
-    return this.orderRepository.find({ relations: ['order_item'] });
-  }
+  // getOrders() {
+  //   return this.orderRepository.find({ relations: ['order_item'] });
+  // }
 
-  getUserOrder(userId: string) {
+  getUserOrder(req): Promise<User[]> {
+    const { sub } = req.user;
     return this.userRepository.find({
-      where: { id: userId },
+      where: { id: sub },
       select: ['name'],
       relations: ['order', 'order.order_item'],
     });
   }
 
-  getRestaurantOrder(restaurantId: string): Promise<Restaurant[]> {
-    return this.restaurantRepository.find({
-      where: { id: restaurantId },
-      select: ['name'],
-      relations: ['order', 'order.order_item'],
-    });
+  getRestaurantOrder(restaurantId: string, req): Promise<Restaurant[]> {
+    const { role } = req.user;
+    if (role == 'chef') {
+      return this.restaurantRepository.find({
+        where: { id: restaurantId },
+        select: ['name'],
+        relations: ['order', 'order.order_item'],
+      });
+    }
+    throw new UnauthorizedException();
   }
 
-  async cancelOrder(orderId: string) {
+  async cancelOrder(orderId: string): Promise<string> {
     const order = await this.orderRepository.findOneBy({ id: orderId });
     if (!order) {
       throw new BadRequestException('Order not found');
@@ -83,49 +91,25 @@ export class OrderService {
       { id: order.id },
       { status: Status.CANCELLED },
     );
+    return 'Order cancelled';
   }
 
-  async completeOrder(orderId: string) {
-    const order = await this.orderRepository.findOneBy({ id: orderId });
-    if (!order) {
-      throw new BadRequestException('Order not found');
+  async completeOrder(orderId: string, req): Promise<string> {
+    const { role } = req.user;
+    if (role == 'chef') {
+      const order = await this.orderRepository.findOneBy({ id: orderId });
+      if (!order) {
+        throw new BadRequestException('Order not found');
+      }
+      if (order.status == Status.CANCELLED) {
+        throw new BadRequestException('Order has been cancelled');
+      }
+      await this.orderRepository.update(
+        { id: order.id },
+        { status: Status.COMPLETED },
+      );
+      return 'Order Completed';
     }
-    if (order.status == Status.CANCELLED) {
-      throw new BadRequestException('Order has been cancelled');
-    }
-    await this.orderRepository.update(
-      { id: order.id },
-      { status: Status.COMPLETED },
-    );
+    throw new UnauthorizedException();
   }
-
-  //   async updateMenu(menuId: string, updateMenuDto: CreateMenuDto) {
-  //     const menu = await this.findMenu(menuId);
-  //     if (updateMenuDto.name) {
-  //       menu.name = updateMenuDto.name;
-  //     }
-  //     if (updateMenuDto.description) {
-  //       menu.description = updateMenuDto.description;
-  //     }
-  //     if (updateMenuDto.image) {
-  //       menu.image = updateMenuDto.image;
-  //     }
-  //     if (updateMenuDto.price) {
-  //       menu.price = updateMenuDto.price;
-  //     }
-  //     return this.orderRepository.save(menu);
-  //   }
-
-  //   async deleteMenu(menuId: string) {
-  //     const menu = await this.findMenu(menuId);
-  //     this.orderRepository.delete(menu);
-  //   }
-
-  //   private async findMenu(id: string) {
-  //     const menu = await this.orderRepository.findOneBy({ id });
-  //     if (!menu) {
-  //       throw new NotFoundException('Could not find menu.');
-  //     }
-  //     return menu;
-  //   }
 }

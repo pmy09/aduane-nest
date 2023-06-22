@@ -45,7 +45,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  deleteProduct(@Param('id') userId: string, @Request() req) {
+  deleteUser(@Param('id') userId: string, @Request() req) {
     return this.usersService.deleteUser(userId, req);
   }
 }

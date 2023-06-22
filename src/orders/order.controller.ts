@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Patch,
   Post,
+  Request,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './order.dtos';
@@ -14,23 +16,24 @@ import { CreateOrderDto } from './order.dtos';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
   @Post()
-  addOrder(@Body() createOrderDto: CreateOrderDto): any {
-    return this.orderService.createOrder(createOrderDto);
+  @UsePipes(new ValidationPipe())
+  addOrder(@Body() createOrderDto: CreateOrderDto, @Request() req) {
+    return this.orderService.createOrder(createOrderDto, req);
   }
 
-  @Get()
-  getAllOrders() {
-    return this.orderService.getOrders();
-  }
+  // @Get()
+  // getAllOrders() {
+  //   return this.orderService.getOrders();
+  // }
 
-  @Get(':id')
-  getOrder(@Param('id') userId: string) {
-    return this.orderService.getUserOrder(userId);
+  @Get('myorders')
+  getOrder(@Request() req) {
+    return this.orderService.getUserOrder(req);
   }
 
   @Get('restaurant/:id')
-  getRestaurantOrder(@Param('id') restaurantId: string) {
-    return this.orderService.getRestaurantOrder(restaurantId);
+  getRestaurantOrder(@Param('id') restaurantId: string, @Request() req) {
+    return this.orderService.getRestaurantOrder(restaurantId, req);
   }
 
   @Patch(':id')
@@ -39,21 +42,7 @@ export class OrderController {
   }
 
   @Patch('restaurant/:id')
-  completeOrder(@Param('id') orderId: string) {
-    return this.orderService.completeOrder(orderId);
+  completeOrder(@Param('id') orderId: string, @Request() req) {
+    return this.orderService.completeOrder(orderId, req);
   }
-
-//   @Patch(':id')
-//   updateOrder(
-//     @Param('id') orderId: string,
-//     @Body() updateOrderDto: CreateOrderDto,
-//   ) {
-//     return this.orderService.updateOrder(orderId, updateOrderDto);
-//   }
-
-//   @Delete(':id')
-//   deleteOrder(@Param('id') orderId: string) {
-//     this.orderService.deleteOrder(orderId);
-//     return null;
-//   }
 }

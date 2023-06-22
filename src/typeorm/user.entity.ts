@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Order } from './order.entity';
 import { Role } from '../users/user.model';
+import { Restaurant } from './restaurant.entity';
 
 @Entity()
 export class User {
@@ -43,4 +44,8 @@ export class User {
   @OneToMany(() => Order, (order) => order.user)
   @JoinColumn()
   order: Order[];
+
+  @OneToMany(() => Restaurant, (restaurant) => restaurant.user)
+  @JoinColumn()
+  restaurant: Restaurant[];
 }
