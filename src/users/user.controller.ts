@@ -8,13 +8,17 @@ import {
   Delete,
   UsePipes,
   ValidationPipe,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { CreateUserDto } from './user.dtos';
 import { UsersService } from './user.service';
+import { AuthGuard, Public } from 'src/helpers/auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+  @Public()
   @Post()
   @UsePipes(new ValidationPipe())
   addUser(@Body() createUserDto: CreateUserDto): any {
@@ -22,15 +26,16 @@ export class UsersController {
   }
 
   @Get()
-  getAllUsers() {
-    return this.usersService.getUsers();
+  getAllUsers(@Request() req) {
+    return this.usersService.getUsers(req);
   }
 
   @Get(':id')
-  getProduct(@Param('id') userId: string) {
-    return this.usersService.getSingleUser(userId);
+  getSingleUser(@Param('id') userId: string, @Request() req) {
+    return this.usersService.getSingleUser(userId, req);
   }
 
+  @Public()
   @Post('login')
   authorizeUser(
     @Body('email') email: string,
@@ -40,7 +45,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  deleteProduct(@Param('id') userId: string) {
-    return this.usersService.deleteUser(userId);
+  deleteProduct(@Param('id') userId: string, @Request() req) {
+    return this.usersService.deleteUser(userId, req);
   }
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, SetMetadata } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -8,6 +8,11 @@ import { OrderModule } from './orders/order.module';
 import { UsersModule } from './users/user.module';
 import { RestaurantModule } from './restaurants/restaurant.module';
 import entities from './typeorm';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './helpers/auth.guard';
+
+// export const IS_PUBLIC_KEY = 'isPublic';
+// export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
 @Module({
   imports: [
@@ -33,6 +38,12 @@ import entities from './typeorm';
     // BookingModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}
