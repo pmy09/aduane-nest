@@ -18,6 +18,12 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     private jwtService: JwtService,
   ) {}
+
+  /**
+   * Creates a new user.
+   * @param createUserDto - The DTO (Data Transfer Object) containing the user information.
+   * @returns A string indicating the success of the operation.
+   */
   async createUser(createUserDto: CreateUserDto): Promise<string> {
     const { email, password } = createUserDto;
     const existsUser = await this.userRepository.findOneBy({ email });
@@ -27,13 +33,18 @@ export class UsersService {
     createUserDto.password = hashPassword(password);
 
     const newUser = this.userRepository.create(createUserDto);
-    this.userRepository.save(newUser);
+    await this.userRepository.save(newUser);
     return 'User successfully created';
   }
 
+  /**
+   * Retrieves all users.
+   * @param req - The request object.
+   * @returns An array of users containing partial information.
+   */
   getUsers(req): Promise<Partial<User[]>> {
     const { role } = req.user;
-    if (role == 'admin') {
+    if (role === 'admin') {
       return this.userRepository.find({
         select: ['id', 'name', 'email', 'role'],
       });
@@ -41,9 +52,15 @@ export class UsersService {
     throw new UnauthorizedException();
   }
 
+  /**
+   * Retrieves a single user by ID.
+   * @param userId - The ID of the user to retrieve.
+   * @param req - The request object.
+   * @returns A partial user object containing selected information.
+   */
   async getSingleUser(userId: string, req): Promise<Partial<User>> {
     const { role } = req.user;
-    if (role == 'admin') {
+    if (role === 'admin') {
       const user = await this.findUser(userId);
       return {
         id: user.id,
@@ -56,6 +73,12 @@ export class UsersService {
     throw new UnauthorizedException();
   }
 
+  /**
+   * Logs in a user.
+   * @param email - The email of the user.
+   * @param password - The password of the user.
+   * @returns An object containing the authentication token and user information.
+   */
   async login(email: string, password: string) {
     const user = await this.userRepository.findOne({
       where: { email },
@@ -78,9 +101,15 @@ export class UsersService {
     };
   }
 
+  /**
+   * Deletes a user.
+   * @param userId - The ID of the user to delete.
+   * @param req - The request object.
+   * @returns A string indicating the success of the operation.
+   */
   async deleteUser(userId: string, req): Promise<string> {
     const { role } = req.user;
-    if (role == 'admin') {
+    if (role === 'admin') {
       const user = await this.findUser(userId);
       this.userRepository.delete(user);
       return 'User deleted';
@@ -88,6 +117,12 @@ export class UsersService {
     throw new UnauthorizedException();
   }
 
+  /**
+   * Finds a user by ID.
+   * @param id - The ID of the user to find.
+   * @returns The found user object.
+   * @throws NotFoundException if the user is not found.
+   */
   async findUser(id: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id },
