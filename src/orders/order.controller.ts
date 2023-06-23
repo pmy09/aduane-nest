@@ -21,10 +21,10 @@ export class OrderController {
     return this.orderService.createOrder(createOrderDto, req);
   }
 
-  // @Get()
-  // getAllOrders() {
-  //   return this.orderService.getOrders();
-  // }
+  @Get()
+  getAllOrders() {
+    return this.orderService.getOrders();
+  }
 
   @Get('myorders')
   getOrder(@Request() req) {

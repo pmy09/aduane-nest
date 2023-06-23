@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -51,9 +50,9 @@ export class OrderService {
     return 'Order created';
   }
 
-  // getOrders() {
-  //   return this.orderRepository.find({ relations: ['order_item'] });
-  // }
+  getOrders() {
+    return this.orderRepository.find({ relations: ['order_item'] });
+  }
 
   getUserOrder(req): Promise<User[]> {
     const { sub } = req.user;

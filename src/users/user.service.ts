@@ -6,9 +6,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-// import { generateAuthToken } from 'src/helpers/generateAuthToken';
 import { hashPassword } from 'src/helpers/hashPassword';
-import { Order, User } from 'src/typeorm';
+import { User } from 'src/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './user.dtos';
 

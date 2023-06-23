@@ -4,16 +4,14 @@ import {
   Body,
   Get,
   Param,
-  Patch,
   Delete,
   UsePipes,
   ValidationPipe,
-  UseGuards,
   Request,
 } from '@nestjs/common';
 import { CreateUserDto } from './user.dtos';
 import { UsersService } from './user.service';
-import { AuthGuard, Public } from 'src/helpers/auth.guard';
+import { Public } from 'src/helpers/auth.guard';
 
 @Controller('users')
 export class UsersController {
